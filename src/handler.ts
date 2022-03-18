@@ -10,9 +10,10 @@ const upArrow = '↗';
 const downArrow = '↘';
 
 const constructMessage = (coin: Coin) => {
-  return `Current price of ${
-    coin.name
-  } is: ${coin.current_price.toLocaleString()}.`;
+  return `Current price of ${coin.name} is: ${coin.current_price.toLocaleString(
+    void 0,
+    { style: 'currency', currency: 'USD' },
+  )}.`;
 };
 
 const constructChange = (coin: Coin) => {
@@ -39,6 +40,9 @@ const constructUpdate = (coin: Coin) => {
 
   return `updated ${diff.toLocaleString()}s ago`;
 };
+
+const constructLink = (coin: Coin) =>
+  `https://coingecko.com/en/coins/${coin.id}`;
 
 export async function handleRequest(event: FetchEvent): Promise<Response> {
   const { searchParams: params } = new URL(event.request.url);
@@ -98,7 +102,19 @@ export async function handleRequest(event: FetchEvent): Promise<Response> {
     });
   }
 
-  return new Response(``, {
+  let textResponse: string = '';
+  textResponse = textResponse + constructMessage(coinFound);
+  if (includePriceChange) {
+    textResponse = textResponse + ` ${constructChange(coinFound)}.`;
+  }
+  if (includeLink) {
+    textResponse = textResponse + ` ${constructLink(coinFound)}`;
+  }
+  textResponse = textResponse + ` (${constructUpdate(coinFound)})`;
+
+  console.log(textResponse);
+
+  return new Response(textResponse, {
     status: 200,
     headers: {
       'Content-Type': 'text/plain',
