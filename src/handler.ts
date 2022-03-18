@@ -38,7 +38,9 @@ const constructUpdate = (coin: Coin) => {
   }
   const diff = (now - updatedAt) / 1000;
 
-  return `updated ${diff.toLocaleString()}s ago`;
+  return `updated ${diff.toLocaleString(void 0, {
+    maximumFractionDigits: 0,
+  })}s ago`;
 };
 
 const constructLink = (coin: Coin) =>
