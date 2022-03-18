@@ -4,10 +4,9 @@ A custom api that returns a cryptocurrency's price and price change, built with 
 
 This api currently resides at `https://crypto.synopsis.workers.dev` .
 
+## Example command response for Fossabot
 
-### Example command response for Fossabot:
-
-```
+```text
 @$(sender), $(customapi https://crypto.synopsis.workers.dev/?coin=$(pathencode $(query))&includeLink=true&includePriceChange=true)
 ```
 
