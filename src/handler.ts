@@ -6,8 +6,8 @@ const urlParams =
   '?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=1h,24h,7d';
 
 const url = `${baseUrl}${path}${urlParams}`;
-const upArrow = '↗';
-const downArrow = '↘';
+const upArrow = '↑';
+const downArrow = '↓';
 
 const constructMessage = (coin: Coin) => {
   return `Current price of ${coin.name} is: ${coin.current_price.toLocaleString(
