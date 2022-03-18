@@ -1,4 +1,4 @@
-import type { Coin } from './types';
+import type { Coin, FullCoin } from './types';
 
 const baseUrl = 'https://api.coingecko.com/';
 const path = 'api/v3/coins/markets';
@@ -48,10 +48,20 @@ export async function handleRequest(event: FetchEvent): Promise<Response> {
   const { searchParams: params } = new URL(event.request.url);
   const includePriceChange = params.get('includePriceChange') === 'true';
   const includeLink = params.get('includeLink') === 'true';
+  const defaultResponse = params.get('defaultResponse') === 'true';
   const wantedCoin = params.get('coin')?.toLowerCase();
 
   if (!wantedCoin || wantedCoin?.length < 1) {
-    return new Response(`No coin/ticker found in parameters.`, {
+    if (defaultResponse === true) {
+      return new Response(`Default response not implemented.`, {
+        status: 501,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+    }
+
+    return new Response(`No coin/ticker found in query parameters.`, {
       status: 400,
       headers: {
         'Content-Type': 'text/plain',
