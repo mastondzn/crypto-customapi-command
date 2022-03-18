@@ -47,87 +47,97 @@ const constructLink = (coin: Coin) =>
   `https://coingecko.com/en/coins/${coin.id}`;
 
 export async function handleRequest(event: FetchEvent): Promise<Response> {
-  const { searchParams: params } = new URL(event.request.url);
-  const includePriceChange = params.get('includePriceChange') === 'true';
-  const includeLink = params.get('includeLink') === 'true';
-  const defaultResponse = params.get('defaultResponse') === 'true';
-  const wantedCoin = params.get('coin')?.toLowerCase();
+  try {
+    const { searchParams: params } = new URL(event.request.url);
+    const includePriceChange = params.get('includePriceChange') === 'true';
+    const includeLink = params.get('includeLink') === 'true';
+    const defaultResponse = params.get('defaultResponse') === 'true';
+    const wantedCoin = params.get('coin')?.toLowerCase();
 
-  if (!wantedCoin || wantedCoin?.length < 1) {
-    if (defaultResponse === true) {
-      return new Response(`Default response not implemented.`, {
-        status: 501,
+    if (!wantedCoin || wantedCoin?.length < 1) {
+      if (defaultResponse === true) {
+        return new Response(`Default response not implemented.`, {
+          status: 501,
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        });
+      }
+
+      return new Response(`No coin/ticker found in query parameters.`, {
+        status: 400,
         headers: {
           'Content-Type': 'text/plain',
         },
       });
     }
 
-    return new Response(`No coin/ticker found in query parameters.`, {
-      status: 400,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    });
-  }
+    const response = await (await fetch(url)).json();
 
-  const response = await (await fetch(url)).json();
+    if ((response as { error: string })?.error) {
+      return new Response(
+        `CoinGecko API reported an error (${
+          (response as { error: string }).error
+        }).`,
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'text/plain',
+          },
+        },
+      );
+    }
 
-  if ((response as { error: string })?.error) {
-    return new Response(
-      `CoinGecko API reported an error (${
-        (response as { error: string }).error
-      }).`,
-      {
+    if (typeof (response as Coin[])?.[0]?.symbol !== 'string') {
+      return new Response(`Malformed API response.`, {
         status: 500,
         headers: {
           'Content-Type': 'text/plain',
         },
-      },
-    );
-  }
+      });
+    }
 
-  if (typeof (response as Coin[])?.[0]?.symbol !== 'string') {
-    return new Response(`Malformed API response.`, {
-      status: 500,
+    const coins = response as Coin[];
+    const coinFound = coins.find((e) => {
+      return (
+        e.name.toLowerCase() === wantedCoin.toLowerCase() ||
+        e.symbol.toLowerCase() === wantedCoin.toLowerCase() ||
+        e.id.toLowerCase() === wantedCoin.toLowerCase().replace(/\s/g, '-')
+      );
+    });
+
+    if (!coinFound) {
+      return new Response(`Coin/ticker was not found in top 250.`, {
+        status: 400,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+    }
+
+    let textResponse = '';
+    textResponse = textResponse + constructMessage(coinFound);
+    if (includePriceChange) {
+      textResponse = textResponse + ` ${constructChange(coinFound)}.`;
+    }
+    if (includeLink) {
+      textResponse = textResponse + ` ${constructLink(coinFound)}`;
+    }
+    textResponse = textResponse + ` (${constructUpdate(coinFound)})`;
+
+    return new Response(textResponse, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
+    //
+  } catch (e) {
+    return new Response(`Internal Server Error`, {
+      status: 55,
       headers: {
         'Content-Type': 'text/plain',
       },
     });
   }
-
-  const coins = response as Coin[];
-  const coinFound = coins.find((e) => {
-    return (
-      e.name.toLowerCase() === wantedCoin.toLowerCase() ||
-      e.symbol.toLowerCase() === wantedCoin.toLowerCase() ||
-      e.id.toLowerCase() === wantedCoin.toLowerCase().replace(/\s/g, '-')
-    );
-  });
-
-  if (!coinFound) {
-    return new Response(`Coin/ticker was not found in top 250.`, {
-      status: 400,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    });
-  }
-
-  let textResponse = '';
-  textResponse = textResponse + constructMessage(coinFound);
-  if (includePriceChange) {
-    textResponse = textResponse + ` ${constructChange(coinFound)}.`;
-  }
-  if (includeLink) {
-    textResponse = textResponse + ` ${constructLink(coinFound)}`;
-  }
-  textResponse = textResponse + ` (${constructUpdate(coinFound)})`;
-
-  return new Response(textResponse, {
-    status: 200,
-    headers: {
-      'Content-Type': 'text/plain',
-    },
-  });
 }
