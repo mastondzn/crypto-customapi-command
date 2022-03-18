@@ -27,7 +27,7 @@ const constructChange = (coin: Coin) => {
   const dayString = `${dayArrow}${day.toLocaleString().replace('-', '')}`;
   const weekString = `${weekArrow}${week.toLocaleString().replace('-', '')}`;
 
-  return `1h:${hourString} / 1d:${dayString} / 1w:${weekString}`;
+  return `1h:${hourString}% / 1d:${dayString}% / 1w:${weekString}%`;
 };
 
 const constructUpdate = (coin: Coin) => {
