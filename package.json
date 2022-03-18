@@ -18,7 +18,9 @@
     "api",
     "custom",
     "crypto",
-    "cryptocurrency"
+    "cryptocurrency",
+    "cloudflare",
+    "workers"
   ],
   "repository": {
     "type": "git",
