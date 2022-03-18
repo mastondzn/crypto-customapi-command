@@ -13,6 +13,13 @@
     "name": "MastonDZN",
     "email": "mastondzn@gmail.com"
   },
+  "keywords": [
+    "twitch",
+    "api",
+    "custom",
+    "crypto",
+    "cryptocurrency"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/MastonDZN/crypto-customapi-command.git"
