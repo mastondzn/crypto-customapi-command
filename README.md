@@ -11,4 +11,6 @@ This api currently resides at https://crypto.synopsis.workers.dev .
 @$(sender), $(customapi https://crypto.synopsis.workers.dev/?coin=$(pathencode $(query))&includeLink=true&includePriceChange=true)
 ```
 
+![Result](https://i.imgur.com/BSkZG2N.png)
+
 You can change or remove the query parameters if you dont wish to have price changes or links.
