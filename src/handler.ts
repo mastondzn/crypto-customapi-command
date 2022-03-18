@@ -102,7 +102,7 @@ export async function handleRequest(event: FetchEvent): Promise<Response> {
     });
   }
 
-  let textResponse: string = '';
+  let textResponse = '';
   textResponse = textResponse + constructMessage(coinFound);
   if (includePriceChange) {
     textResponse = textResponse + ` ${constructChange(coinFound)}.`;
@@ -111,8 +111,6 @@ export async function handleRequest(event: FetchEvent): Promise<Response> {
     textResponse = textResponse + ` ${constructLink(coinFound)}`;
   }
   textResponse = textResponse + ` (${constructUpdate(coinFound)})`;
-
-  console.log(textResponse);
 
   return new Response(textResponse, {
     status: 200,
